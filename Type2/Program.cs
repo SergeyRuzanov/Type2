@@ -61,6 +61,41 @@ namespace Type2
         static void Dist(int[,] tree, List<int> priority, int k)
         {
             List<List<int>> jobs = new List<List<int>>(k);
+            List<int> first = new List<int>(); // готовые к распределению
+            List<int> second = new List<int>(); // могут распределяться после первых
+
+            for (int i = priority.Count - 1; i >= 0; i--)
+            {
+                bool IsLeaf = true;
+                for (int j = 0; j < tree.GetLength(0); j++)
+                {
+                    if (tree[j, priority[i]] == 1)
+                    {
+                        IsLeaf = false;
+                        break;
+                    }
+                }
+
+                if (IsLeaf)
+                {
+                    first.Add(priority[i]);
+                    priority.RemoveAt(i);
+                }
+            }
+
+            for (int i = 0; i < first.Count; i++)
+            {
+                bool flag = true;
+                for(int j = 0; j< tree.GetLength(0); j++)
+                {
+                    if(tree[j, first[i]] == 1)
+                    {
+                        if(first.Contains(j)) second.
+                    }
+                }
+            }
+
+
 
         }
 
