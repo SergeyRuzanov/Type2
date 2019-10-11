@@ -62,7 +62,11 @@ namespace Type2
 
         static List<List<int>> Dist(int[,] tree, List<int> priority, int k)
         {
-            List<List<int>> jobs = new List<List<int>>() { new List<int>(), new List<int>(), new List<int>() };
+            List<List<int>> jobs = new List<List<int>>(k);
+            for (int i = 0; i < k; i++)
+            {
+                jobs.Add(new List<int>());
+            }
             List<int> first = new List<int>(); // готовые к распределению
             List<int> second = new List<int>(); // могут распределяться после первых
             List<int> done = new List<int>();
@@ -175,7 +179,7 @@ namespace Type2
             };
 
 
-            List<List<int>> list = Rasp(tree, 3); ;
+            List<List<int>> list = Rasp(tree, 4); ;
 
             for (int i = 0; i < list.Count; i++)
             {
