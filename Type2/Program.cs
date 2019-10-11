@@ -5,7 +5,7 @@ namespace Type2
 {
     class Program
     {
-        static void Rasp(int[,] tree, int k)
+        static List<List<int>> Rasp(int[,] tree, int k)
         {
             List<int> priority = new List<int>();
             int indexPriority = 0; //
@@ -43,6 +43,8 @@ namespace Type2
                 priority.InsertRange(priority.Count, list);
             }
 
+            return Dist(tree, priority, k);
+
         }
 
         static List<int> A(List<int> priority, int[,] tree, int indexCol)
@@ -58,12 +60,63 @@ namespace Type2
             return list;
         }
 
-        static void Dist(int[,] tree, List<int> priority, int k)
+        static List<List<int>> Dist(int[,] tree, List<int> priority, int k)
         {
-            List<List<int>> jobs = new List<List<int>>(k);
+            List<List<int>> jobs = new List<List<int>>() { new List<int>(), new List<int>(), new List<int>() };
             List<int> first = new List<int>(); // готовые к распределению
             List<int> second = new List<int>(); // могут распределяться после первых
+            List<int> done = new List<int>();
 
+            MakeLists(first, second, done, priority, tree);
+
+            while (done.Count != tree.GetLength(0))
+            {
+                for (int j = 0; j < jobs.Count; j++)
+                {
+                    if (first.Count == 0)
+                    {
+                        jobs[j].Add(-1);
+                        continue;
+                    }
+                    jobs[j].Add(first[0]);
+                    done.Add(first[0]);
+                    first.RemoveAt(0);
+                }
+
+                MakeListsTwo(first, second, done, priority, tree);
+            }
+            return jobs;
+        }
+
+        static void MakeListsTwo(List<int> first, List<int> second, List<int> done, List<int> priority, int[,] tree)
+        {
+            first.InsertRange(first.Count, second);
+            second.Clear();
+
+            for (int i = priority.Count - 1; i >= 0; i--)
+            {
+                bool flag = true;
+                for (int j = 0; j < tree.GetLength(0); j++)
+                {
+                    if (tree[j, priority[i]] == 1)
+                    {
+                        if (!first.Contains(j) && !done.Contains(j))
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                if (flag)
+                {
+                    second.Add(priority[i]);
+                    priority.RemoveAt(i);
+                }
+            }
+        }
+
+        static void MakeLists(List<int> first, List<int> second, List<int> done, List<int> priority, int[,] tree)
+        {
             for (int i = priority.Count - 1; i >= 0; i--)
             {
                 bool IsLeaf = true;
@@ -83,20 +136,26 @@ namespace Type2
                 }
             }
 
-            for (int i = 0; i < first.Count; i++)
+            for (int i = priority.Count - 1; i >= 0; i--)
             {
                 bool flag = true;
-                for(int j = 0; j< tree.GetLength(0); j++)
+                for (int j = 0; j < tree.GetLength(0); j++)
                 {
-                    if(tree[j, first[i]] == 1)
+                    if (tree[j, priority[i]] == 1)
                     {
-                        if(first.Contains(j)) second.
+                        if (!first.Contains(j) && !done.Contains(j))
+                        {
+                            flag = false;
+                            break;
+                        }
                     }
                 }
+                if (flag)
+                {
+                    second.Add(priority[i]);
+                    priority.RemoveAt(i);
+                }
             }
-
-
-
         }
 
 
@@ -104,15 +163,28 @@ namespace Type2
         {
             int[,] tree = new int[,]
             {
-                { 0,0,0,1,0,0,0},
                 { 0,0,0,0,0,0,0},
                 { 1,0,0,0,0,0,0},
-                { 0,0,0,0,0,0,0},
+                { 1,0,0,0,0,0,0},
                 { 0,1,0,0,0,0,0},
                 { 0,0,1,0,0,0,0},
-                { 0,0,1,0,0,0,0}
+                { 0,0,1,0,0,0,0},
+                { 0,0,0,0,0,1,0}
             };
-            Rasp(tree, 3);
+
+
+            List<List<int>> list = Rasp(tree, 3); ;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                Console.Write($"Работник {i}:");
+                for (int j = 0; j < list[i].Count; j++)
+                {
+                    Console.Write(String.Format("{0, 4}", list[i][j]));
+                }
+                Console.WriteLine();
+            }
+            Console.ReadKey();
         }
     }
 }
