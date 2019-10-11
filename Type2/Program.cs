@@ -180,7 +180,10 @@ namespace Type2
                 Console.Write($"Работник {i}:");
                 for (int j = 0; j < list[i].Count; j++)
                 {
-                    Console.Write(String.Format("{0, 4}", list[i][j]));
+                    if (list[i][j] != -1)
+                        Console.Write(String.Format("{0, 4}", list[i][j]));
+                    else
+                        Console.Write(String.Format("{0, 4}", '-'));
                 }
                 Console.WriteLine();
             }
