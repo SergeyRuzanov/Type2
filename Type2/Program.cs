@@ -93,12 +93,6 @@ namespace Type2
 
             while (done.Count != tree.GetLength(0))
             {
-                //если в списке готовых к выполнению работ нет элементов, то заполняем списки заного
-                if (first.Count == 0)
-                {
-                    MakeListsTwo(first, second, done, priority, tree);
-                    continue;
-                }
                 //распределяем работы по работникам (если для работника не хватит работы на данное время, то вставляем -1)
                 for (int j = 0; j < jobs.Count; j++)
                 {
@@ -127,8 +121,30 @@ namespace Type2
         /// <param name="tree">Матрица смежности работ.</param>
         static void MakeListsTwo(List<int> first, List<int> second, List<int> done, List<int> priority, int[,] tree)
         {
-            first.InsertRange(first.Count, second); //добавляем в список first все работы из списка second
-            second.Clear();
+            //Перенос работ из second в first, если для работы из second в first нет работ, от которых работа из second зависит
+            int t = 0;
+            while (t < second.Count)
+            {
+                bool flag = true;
+                for (int j = 0; j < tree.GetLength(0); j++)
+                {
+                    if (tree[j, second[t]] == 1)
+                    {
+                        if (first.Contains(j))
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+                if (flag)
+                {
+                    first.Add(second[t]);
+                    second.RemoveAt(t);
+                    continue;
+                }
+                t++;
+            }
 
             //добавление работ в спсисок second
             for (int i = priority.Count - 1; i >= 0; i--)
@@ -140,7 +156,7 @@ namespace Type2
                 {
                     if (tree[j, priority[i]] == 1)//проверка: зависит ли работа из списка priority от других работ
                     {
-                        if (first.Contains(j) || !done.Contains(j)) //проверка: находится ли работа, от которой зависит данная работа, в списке завершенных работ или готовых к выполению
+                        if (!first.Contains(j) && !done.Contains(j)) //проверка: находится ли работа, от которой зависит данная работа, в списке завершенных работ или готовых к выполению
                         {
                             flag = false;
                             break;
@@ -212,16 +228,15 @@ namespace Type2
             int[,] tree = new int[,]
             {
                 {0,0,0,0,0,0},
-                {0,0,0,0,1,0},
-                {1,0,0,0,0,0},
-                {0,0,0,0,0,1},
-                {1,0,0,0,0,0},
-                {1,0,0,0,0,0},
-
+{0,0,0,0,1,0},
+{1,0,0,0,0,0},
+{0,0,0,0,0,1},
+{1,0,0,0,0,0},
+{1,0,0,0,0,0}
             };
 
 
-            List<List<int>> list = Rasp(tree, 2); ;
+            List<List<int>> list = Rasp(tree, 3); ;
 
             for (int i = 0; i < list.Count; i++)
             {
